@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "8801901436",
+    "firebase_url": "https://lungcare-318fb.firebaseio.com",
+    "project_id": "lungcare-318fb",
+    "storage_bucket": "lungcare-318fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8801901436:android:1b0d9e8e3278ba27",
+        "android_client_info": {
+          "package_name": "unimelb.lungcare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "8801901436-s785atehhj5a981ms5kt6icu84u0em5o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "unimelb.lungcare",
+            "certificate_hash": "054a83a182104d4db997d3d510b0d2d3c2f3384a"
+          }
+        },
+        {
+          "client_id": "8801901436-as16dmqklrk6nmhkh7u7vkeker9hsums.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkVDqG42Omrkd6cmJkVmmd4N-2lmeIDnQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "8801901436-as16dmqklrk6nmhkh7u7vkeker9hsums.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

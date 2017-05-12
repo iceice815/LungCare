@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="#4644aa"
+    tools:context="unimelb.lungcare.GoogleTrack">
+
+    <unimelb.lungcare.FtoggleButton
+        android:id="@+id/toggleId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOff="Start"
+        android:textOn="Stop"/>
+
+
+    <unimelb.lungcare.FButton
+
+        android:id="@+id/summaryId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:text="statistic"/>
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="410dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toggleId" />
+
+
+</RelativeLayout>
