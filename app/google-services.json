@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "8801901436-s6ofo8ht09mejkpmgjjch5cqmniuk6rs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "unimelb.lungcare",
+            "certificate_hash": "b598ae7dfdb95bd838ebaa393749820cd8268f87"
+          }
+        },
+        {
           "client_id": "8801901436-s785atehhj5a981ms5kt6icu84u0em5o.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

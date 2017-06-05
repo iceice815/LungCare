@@ -10,15 +10,14 @@ import java.util.ArrayList;
  * Created by Administrator on 4/25/2017.
  */
 
+
 public class DistanceCalculationByLatLng {
     static final Double EARTH_RADIUS = 6378.137;
-    private static double rad(double d)
-    {
-        return d * Math.PI / 180.0;
-    }
+    /**
+     * calculate distance between two coordinates
+     */
     public static double getRealDistance(double lat1, double lng1,
                                          double lat2, double lng2) {
-
         double radLat1 = rad(lat1);
         double radLat2 = rad(lat2);
         double a = radLat1 - radLat2;
@@ -29,7 +28,9 @@ public class DistanceCalculationByLatLng {
         s = Math.round(s * 10000) / 10;
         return s;
     }
-
+    /**
+     * accumulate all distance, then it will be the total walking distance
+     */
     public static double getDistanceFromLocations(ArrayList<Location> locations){
                 double distance =0;
                 for(int i =0; i <locations.size()-1; i++){
@@ -37,5 +38,10 @@ public class DistanceCalculationByLatLng {
                             locations.get(i+1).getLatitude(),locations.get(i+1).getLongitude());
                 }
         return distance;
+    }
+    private static double rad(double d)
+    {
+
+        return d * Math.PI / 180.0;
     }
 }

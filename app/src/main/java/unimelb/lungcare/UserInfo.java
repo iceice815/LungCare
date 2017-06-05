@@ -1,7 +1,8 @@
 package unimelb.lungcare;
 
 /**
- * Created by Administrator on 4/19/2017.
+ * Created by Bing Xie on 4/19/2017.
+ * used to defined a container to download data from real-time database
  */
 
 public class UserInfo {

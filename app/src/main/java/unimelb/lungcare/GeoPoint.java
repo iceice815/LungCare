@@ -1,7 +1,8 @@
 package unimelb.lungcare;
 
 /**
- * Created by Administrator on 4/19/2017.
+ * Created by Bing Xie on 4/19/2017.
+ * define a container for location points
  */
 
 public class GeoPoint {

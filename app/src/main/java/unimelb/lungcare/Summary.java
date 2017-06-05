@@ -36,10 +36,12 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static java.lang.Math.abs;
-
+/**
+ * Created by Bing Xie on 4/19/2017.
+ * define the third activity for daily and weekly data virtualization
+ */
 
 public class Summary extends AppCompatActivity {
-    //private TextView patientID;
     private TextView dayClimbNum;
     private TextView weekClimbNum;
     private Button update;
@@ -77,6 +79,7 @@ public class Summary extends AppCompatActivity {
         doctorIDString = receivedIntent.getStringExtra("doctorID");
         goalOfWeek=Double.parseDouble(receivedIntent.getStringExtra("goalOfWeek"));
         mDatabaseHelper=new DatabaseHelper(this);
+        //get the firebase instance
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("UserDataHis").child(doctorIDString).child(patientIDString).addValueEventListener(new ValueEventListener() {
             @Override
@@ -99,33 +102,33 @@ public class Summary extends AppCompatActivity {
         });
         Toast.makeText(Summary.this, ""+containers.size(), Toast.LENGTH_SHORT).show();
 
-
+        /**
+         * create a bar and two pie charts
+         */
         barChart=(BarChart)findViewById(unimelb.lungcare.R.id.bargraphID);
         pieChart=(PieChart)findViewById(R.id.piechartID) ;
         pieChart2=(PieChart)findViewById(R.id.piechartID2) ;
 
-        //得到一周日期
+        //get current week date
         dates=getWeekList();
+        //get weekly walking distance
         distancePerWeek = getWeekDis(dates,containers);
+        //get weelky up altitude
         upAltitudePerWeek=getWeekUpAltitude(dates,containers);
+        //get weekly down altitude
         downAltitudePerWeek=getWeekDownAltitude(dates,containers);
-        //得到对应的每天距离
+
         barEntries=getBarEntries(dates,distancePerWeek);
+        //display the current week walking distance
         populateBarChart(barChart,barEntries,dates);
-
-
+        //display the weekly and daily walking progress
         setPieChartProperty(pieChart);
         populatePieChart(pieChart);
-
         setPieChartProperty(pieChart2);
         populatePieChart2(pieChart2);
 
 
         update =(Button)findViewById(R.id.update);
-        //传入patientID
-        //patientID = (TextView)findViewById(unimelb.lungcare.R.id.patientID);
-        //populatepatientID(patientID);
-        //得出每天爬的楼层数
         dayClimbNum=(TextView)findViewById(unimelb.lungcare.R.id.climbNumID);
         weekClimbNum =(TextView)findViewById(R.id.weekfloorID);
 
@@ -134,36 +137,50 @@ public class Summary extends AppCompatActivity {
         dayDistance=(TextView)findViewById(unimelb.lungcare.R.id.dayDistanceID);
 
         weekDistance=(TextView)findViewById(unimelb.lungcare.R.id.weekDistanceID);
+        //a listener is added into button UPDATE
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //得到一周日期
+                //get current week date
                 dates=getWeekList();
+                //get weekly walking distance
                 distancePerWeek = getWeekDis(dates,containers);
+                //get weelky up altitude
                 upAltitudePerWeek=getWeekUpAltitude(dates,containers);
+                //get weekly down altitude
                 downAltitudePerWeek=getWeekDownAltitude(dates,containers);
-                //得到对应的每天距离
+
                 barEntries=getBarEntries(dates,distancePerWeek);
                 barChart.setActivated(true);
-                //生成barchart
+
+                //display the current week walking distance
                 populateBarChart(barChart,barEntries,dates);
 
+                //display the weekly and daily walking progress
                 setPieChartProperty(pieChart);
                 setPieChartProperty(pieChart2);
                 populatePieChart(pieChart);
-
                 populatePieChart2(pieChart2);
 
+                //display the daily flights climbed
                 populateDayClimbFloor(dayClimbNum);
-                //得出每天走的距离
+                //display the daily walking distance
                 populateDayDistance(dayDistance);
+                //display the weekly flights climbed
                 populateweekClumbFloor(weekClimbNum);
-                //计算此周走的距离
+                //display the weekly walking distance
                 populateweekDistance(weekDistance);
             }
         });
 
     }
+
+    /**
+     *
+     * @param dates
+     * @param containers
+     * @return an ArrayList which contains current week walking distance
+     */
     public ArrayList<Double> getWeekDis(ArrayList<String>dates, ArrayList<UserDataContainer> containers){
         ArrayList<Double> weekdis = new ArrayList<>();
         for(int i=0; i<dates.size(); i++){
@@ -180,6 +197,13 @@ public class Summary extends AppCompatActivity {
         }
         return weekdis;
     }
+
+    /**
+     *
+     * @param dates
+     * @param containers
+     * @return an ArrayList which contains  upaltitude of current week
+     */
     public ArrayList<Double> getWeekUpAltitude(ArrayList<String>dates, ArrayList<UserDataContainer> containers){
         ArrayList<Double> weekUpAltitude = new ArrayList<>();
         for(int i=0; i<dates.size(); i++){
@@ -196,6 +220,12 @@ public class Summary extends AppCompatActivity {
         }
         return weekUpAltitude;
     }
+    /**
+     *
+     * @param dates
+     * @param containers
+     * @return an ArrayList which contains  downaltitude of current week
+     */
     public ArrayList<Double> getWeekDownAltitude(ArrayList<String>dates, ArrayList<UserDataContainer> containers){
         ArrayList<Double> weekDownAltitude = new ArrayList<>();
         for(int i=0; i<dates.size(); i++){
@@ -213,7 +243,13 @@ public class Summary extends AppCompatActivity {
         return weekDownAltitude;
     }
 
-
+    /**
+     *
+     * @param barChart
+     * @param barEntries
+     * @param dates
+     * display the weekly walking distance in Barchart form
+     */
     public void populateBarChart(BarChart barChart,ArrayList<BarEntry>barEntries,ArrayList<String>dates){
         BarDataSet barDataSet = new BarDataSet(barEntries,"unit/m");
 
@@ -240,7 +276,10 @@ public class Summary extends AppCompatActivity {
         return barEntriesTemp;
     }
 
-
+    /**
+     *
+     * @return an Arraylist containing current week date information
+     */
     public ArrayList<String> getWeekList(){
         ArrayList<String> list = new ArrayList<>();
         Date date = new Date();
@@ -248,21 +287,16 @@ public class Summary extends AppCompatActivity {
         cal.clear();
         cal.setTime(date);
         switch (cal.get(Calendar.DAY_OF_WEEK)){
-            //星期天
+            //Sunday
             case 1:
-//                for(int i=0;i<7;i++) {
-//                    list.add(getDate(cal));
-//                    cal.add(Calendar.DAY_OF_MONTH,-1);
-//
-//                }
-//                Collections.reverse(list);
+
                 cal.add(Calendar.DAY_OF_MONTH,-6);
                 for (int i = 0 ; i <7 ; i++){
                     list.add(getDate(cal));
                     cal.add(Calendar.DAY_OF_MONTH,1);
                 }
                 break;
-            //星期一
+            //Monday
             case 2:
                 for(int i=0;i<7;i++){
                     list.add(getDate(cal));
@@ -270,7 +304,7 @@ public class Summary extends AppCompatActivity {
                 }
 
                 break;
-            //星期二
+            //Tuesday
             case 3:
                 cal.add(Calendar.DAY_OF_MONTH,-1);
                 for (int i = 0 ; i <7 ; i++){
@@ -278,7 +312,7 @@ public class Summary extends AppCompatActivity {
                     cal.add(Calendar.DAY_OF_MONTH,1);
                 }
                 break;
-            //星期三
+            //Wednesday
             case 4:
                 cal.add(Calendar.DAY_OF_MONTH,-2);
                 for (int i = 0 ; i <7 ; i++){
@@ -287,7 +321,7 @@ public class Summary extends AppCompatActivity {
                 }
 
                 break;
-            //星期四
+            //Thursday
             case 5:
                 cal.add(Calendar.DAY_OF_MONTH,-3);
                 for (int i = 0 ; i <7 ; i++){
@@ -296,7 +330,7 @@ public class Summary extends AppCompatActivity {
                 }
 
                 break;
-            //星期五
+            //Friday
             case 6:
                 cal.add(Calendar.DAY_OF_MONTH,-4);
                 for (int i = 0 ; i <7 ; i++){
@@ -306,7 +340,7 @@ public class Summary extends AppCompatActivity {
 
 
                 break;
-            //星期六
+            //Saturday
             case 7:
                 cal.add(Calendar.DAY_OF_MONTH,-5);
                 for (int i = 0 ; i <7 ; i++){
@@ -330,6 +364,11 @@ public class Summary extends AppCompatActivity {
         }
         return curDate;
     }
+
+    /**
+     * display the daily flights climbed
+     * @param climbFloor
+     */
     public void populateDayClimbFloor(TextView climbFloor){
         String dateToString =getTodayDate();
         double upAltitude =0;
@@ -345,6 +384,10 @@ public class Summary extends AppCompatActivity {
         dayClimbNum.setText("UP:         "+(int)(upAltitude/3.3)+" floors\n"+"DOWN:  "+(int)(downAltitude/3.3)+" floors");
 
     }
+    /**
+     * display the daily walking distance
+     * @param dayDistance
+     */
     public void populateDayDistance(TextView dayDistance){
         String dateToString =getTodayDate();
         double dis =0;
@@ -357,6 +400,10 @@ public class Summary extends AppCompatActivity {
         dayDistance.setText(dis+" m");
 
     }
+    /**
+     * display the weekly flights climbed
+     * @param weekClimbNum
+     */
     public void populateweekClumbFloor(TextView weekClimbNum){
         double up = 0;
         double down = 0;
@@ -369,7 +416,10 @@ public class Summary extends AppCompatActivity {
         weekClimbNum.setText("UP:         "+(int)(up/3.3)+" floors\n"+"DOWN:  "+(int)(down/3.3)+" floors");
 
     }
-
+    /**
+     * display the weekly walking distance
+     * @param weekDistance
+     */
     public void populateweekDistance(TextView weekDistance){
         double weekDis = 0;
         for (int i=0;i<distancePerWeek.size();i++){
@@ -385,18 +435,24 @@ public class Summary extends AppCompatActivity {
         String dateToString =simpleDateFormat.format(date);
         return dateToString;
     }
+
+    /**
+     * set pie chart property
+     * @param pieChart
+     */
     public void setPieChartProperty(PieChart pieChart){
         pieChart.setDescription(null);
         pieChart.setRotationEnabled(true);
         pieChart.setUsePercentValues(true);
-        //pieChart.setHoleColor(Color.BLUE);
-        //pieChart.setCenterTextColor(Color.BLACK);
         pieChart.setHoleRadius(5f);
         pieChart.setTransparentCircleAlpha(0);
         pieChart.setCenterTextSize(10);
-        //pieChart.setDrawEntryLabels(true);
-        //pieChart.setEntryLabelTextSize(20);
     }
+
+    /**
+     * display the weekly walking progress
+     * @param pieChart
+     */
     public void populatePieChart(PieChart pieChart){
         ArrayList<PieEntry> yEntrys = new ArrayList<>();
         ArrayList<String> xEntrys =new ArrayList<>();
@@ -430,6 +486,11 @@ public class Summary extends AppCompatActivity {
         pieChart.setData(pieData);
         pieChart.invalidate();
     }
+
+    /**
+     * display the daily walking progress
+     * @param pieChart
+     */
     public void populatePieChart2(PieChart pieChart){
         ArrayList<PieEntry> yEntrys = new ArrayList<>();
         ArrayList<String> xEntrys =new ArrayList<>();

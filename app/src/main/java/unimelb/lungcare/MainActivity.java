@@ -20,6 +20,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+/**
+ * Created by Bing Xie on 4/19/2017.
+ * define the first activity for login page
+ */
 
 public class MainActivity extends AppCompatActivity {
     private EditText patientID;
@@ -33,13 +37,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //final ArrayList<UserInfo> userInfos = new ArrayList<UserInfo>();
         patientID = (EditText) findViewById(R.id.patientID);
         login = (Button)findViewById(R.id.btnID);
+        //create a noficationManager object form system service
         nm =(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
+        //get the instance of realtime database
         mDatabse = FirebaseDatabase.getInstance().getReference();
-
+        //read data from root Registed
         mDatabse.child("Registed").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -57,11 +61,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-       // Toast.makeText(MainActivity.this, ""+userInfos.size(), Toast.LENGTH_SHORT).show();
-
-        //给button绑定监听器
-        //获取服务器或本地数据，判断unitcode是否正确
-
+        //bind a listener to button
+        //get data from real-time database, judge whether patientID is right
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

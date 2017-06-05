@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by Administrator on 4/6/2017.
+ * Created by Bing Xie on 4/6/2017.
  */
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -27,7 +27,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public DatabaseHelper(Context context) {
         super(context, TABLE_NAME, null, 1);
     }
-
+    /**
+     * create table
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = " CREATE TABLE " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -37,10 +39,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
+    /**
+     * upgrade table
+     */
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP IF TABLE EXISTS " + TABLE_NAME);
         onCreate(db);
     }
+    /**
+     * add data to SQLite
+     */
     public boolean addData(String patientID, ArrayList<Location> locations){
         SQLiteDatabase db = this.getWritableDatabase();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -66,6 +74,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
     }
+    /**
+     * get data from table
+     */
     public Cursor getLatLngPoints (String date){
         SQLiteDatabase db = this.getWritableDatabase();
         String query="SELECT * FROM " + TABLE_NAME + " WHERE "+COL5+" = '"+date + "'";

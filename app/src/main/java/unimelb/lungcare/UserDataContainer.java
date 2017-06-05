@@ -3,7 +3,8 @@ package unimelb.lungcare;
 import java.util.ArrayList;
 
 /**
- * Created by Administrator on 4/19/2017.
+ * Created by Bing Xie on 4/19/2017.
+ * used to defined a container for upload data to real-time database
  */
 
 public class UserDataContainer {

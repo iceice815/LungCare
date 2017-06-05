@@ -44,6 +44,10 @@ import java.util.Date;
 
 import static unimelb.lungcare.DistanceCalculationByLatLng.getDistanceFromLocations;
 import static unimelb.lungcare.FlightsClimb.getAltitudeFromPressure;
+/**
+ * Created by Bing Xie on 4/19/2017.
+ * define the second activity with for recording data and display route on google Map
+ */
 
 public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -57,9 +61,7 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
     private double goalOfWeek;
     private static final String TAG = "GoogleTrackActivity";
     DatabaseHelper mDatabaseHelper;
-
     private DatabaseReference mDatabase;
-
     private SensorManager sensorManager ;
     private Sensor mPressure;
     private SensorEventListener pressureListener;
@@ -73,25 +75,20 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(unimelb.lungcare.R.layout.activity_google_track);
-
+        //create sensorManager object from system service
         sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-
+        //use the baromeer sensor
         mPressure = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
-    
+        //initilize google map
         initMap();
-
-
-
-        //这句话必须写，不然程序bug
+        //add SQLite to program
         mDatabaseHelper = new DatabaseHelper(this);
         //get data from previous activity
         Intent receivedIntent = getIntent();
         patientID = receivedIntent.getStringExtra("patientID");
         doctorID = receivedIntent.getStringExtra("doctorID");
         goalOfWeek=Double.parseDouble(receivedIntent.getStringExtra("goalOfWeek"));
-
-
-        mDatabaseHelper=new DatabaseHelper(this);
+        //used to retrieve patient previous data for telling user the remaining goal
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("UserDataHis").child(doctorID).child(patientID).addValueEventListener(new ValueEventListener() {
             @Override
@@ -101,7 +98,6 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
 
 
                     UserDataContainer container = child.getValue(UserDataContainer.class);
-                    //Toast.makeText(Summary.this, ""+container.getDistance(), Toast.LENGTH_SHORT).show();
                     containers.add(container);
 
                 }
@@ -113,8 +109,9 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-
+        //defined a toogle
         toggle = (ToggleButton) findViewById(unimelb.lungcare.R.id.toggleId);
+        //defined a button
         trackButton = (Button) findViewById(unimelb.lungcare.R.id.summaryId);
 
         ToggleListener listener = new ToggleListener();
@@ -135,16 +132,19 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    //点击后，开启新线程计算走路距离
     int iniDialog = 0;
+    //add a listener to toggle
     class ToggleListener implements CompoundButton.OnCheckedChangeListener {
-
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            //press start and execute
             if (isChecked) {
                 toggle.setChecked(true);
+                //initialize location
                 iniLocation();
+                //display a AlertDialog to tell user the remaining walking distance
+
                 if(iniDialog==0) {
                     double weekDis = getGoalOfWeekDialog();
                     AlertDialog.Builder builder = new AlertDialog.Builder(GoogleTrack.this)
@@ -158,11 +158,11 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
                 iniDialog++;
                 getBarometerAndGPS();
                 }
-            //点击 stop按钮后执行
+            //press stop and execute
             else {
                 toggle.setChecked(false);
                 
-                //在此UI界面显示AlertDialog
+                //display a AlertDialog to ask user whether upload data to real-time database
                 AlertDialog.Builder builder = new AlertDialog.Builder(GoogleTrack.this)
                         .setTitle("Synchronization")
                         .setIcon(unimelb.lungcare.R.drawable.submittool)
@@ -177,6 +177,10 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
             }
 
         }
+
+        /**
+         * @return the remaining walking distance
+         */
         public double getGoalOfWeekDialog(){
             Summary sum =new Summary();
             ArrayList<String> dates=new ArrayList<>();
@@ -189,20 +193,25 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
             }
             return weekDis;
         }
-
+        /**
+         * invoke GPS and Barometer sensor
+         */
         public void getBarometerAndGPS(){
-
+            //define air pressure lisener
             pressureListener = new SensorEventListener() {
                 @Override
                 public void onSensorChanged(SensorEvent event) {
-                    float p = event.values[0];//values[0]: Atmospheric pressure in hPa (millibar)
+                    //return from Barometer sensor values[0]: Atmospheric pressure in hPa (millibar)
+                    float p = event.values[0];
 
                     double Altitude = getAltitudeFromPressure(p);
                     if (cnt == 0) {
                         tempAltitude = Altitude;
                         cnt++;
                     }
-                    //一层楼标准3.3米，每变化3.3米，重新赋值，楼层数+1
+                    /**
+                     * By my dozens of experiments, two meter as sample rate will have high efficiency
+                     */
                     if ((Altitude - tempAltitude) >= 2) {
                         tempAltitude = Altitude;
                         upAltitude=upAltitude+2;
@@ -211,22 +220,16 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
                         tempAltitude = Altitude;
                         downAltitude=downAltitude+2;
                     }
-
-
                 }
-
-
                 @Override
                 public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
                 }
-
             };
 
-            //得到locationManager对象，绑定监听器
+            //get locationManager object, bind lisener
             LocationManager locationManager = (LocationManager) GoogleTrack.this.getSystemService(Context.LOCATION_SERVICE);
-            //1.定义当前所使用的Location Provider
-            //设置最短更新时间是10000毫秒，最短更新距离10米
+            //define current defined Location Provider
             if (ActivityCompat.checkSelfPermission(GoogleTrack.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(GoogleTrack.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -237,11 +240,14 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, new NewLocationListener());
+            //set return location from GPS every 2 second gap
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10000, new NewLocationListener());
 
         }
     }
-
+    /**
+     * the button in dialog for telling user to comfirm his goal
+     */
     private AlertDialog.Builder setPositiveButtonForGoal(AlertDialog.Builder builder){
         return builder.setPositiveButton("Confirm",new DialogInterface.OnClickListener(){
 
@@ -252,17 +258,20 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
         });
 
     }
+    /**
+     * the button in dialog for submitting data to real-time database
+     */
     private AlertDialog.Builder setPositiveButton(AlertDialog.Builder builder) {
 
         return builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                //谷歌地图上画图
+                //draw walk route on google map
                 drawlines(locations);
-                //将数据发送至云端和本地数据库
+                //sen data to real-time database of cloud server
                 addDataToCloud(locations);
-                //Log.i(TAG,patientID);#123
+                //add data to SQLite for local (app) data backup
                 addDataToSQLite(locations);
                 Toast.makeText(GoogleTrack.this, "Submiting...", Toast.LENGTH_SHORT).show();
                 locations.clear();
@@ -272,13 +281,15 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
         });
 
     }
+    /**
+     * the button in dialog for submitting data to real-time database
+     */
 
     private AlertDialog.Builder setNegativeButton(AlertDialog.Builder builder) {
-        //调用 setNegativeButton方法添加“cancell"事件
+        //invoke setNegativeButton method for add “cancell" event
         return builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //如果delete，清除arraylist数据
                 upAltitude=0;
                 downAltitude=0;
                 locations.clear();
@@ -286,14 +297,17 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
             }
         });
     }
-    //将所有数据信息发送至firebase
+
+    /**
+     * add data to cloud server
+     */
+
     public void addDataToCloud(ArrayList<Location>locations){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
         Date date = new Date();
         String dateToString =simpleDateFormat.format(date);
         UserDataContainer container =new UserDataContainer();
         container.setDate(dateToString);
-        //container.setpatientID(patientID);
         double tempdis =getDistanceFromLocations(locations);
         container.setDistance(tempdis);
         ArrayList<GeoPoint> history = new ArrayList<>();
@@ -307,8 +321,10 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
         container.setUpAltitude(upAltitude);
         container.setDownAltitude(downAltitude);
         try {
+            //get the firebase instance
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference databaseReference = database.getReference();
+            //upload patient walking data after finding sub-root ‘doctorID’ then sub-root ‘patientID”.
             databaseReference.child("UserDataHis").child(doctorID).child(patientID).push().setValue(container);
         }catch (Exception e){
             e.printStackTrace();
@@ -317,11 +333,12 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    //将所有坐标信息插入到数据库
+    /**
+     * add data to SQLite
+     */
     public void addDataToSQLite( ArrayList<Location> locations) {
 
         boolean insertData = mDatabaseHelper.addData(patientID, locations);
-        Log.i(TAG," 1"+insertData);
         if (insertData == true) {
             Toast.makeText(GoogleTrack.this, "Data Successfully submited!", Toast.LENGTH_SHORT).show();
         } else {
@@ -332,7 +349,9 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
     ArrayList<Location> locations = new ArrayList<Location>();
     Polyline line;
 
-    //draw line after press stop
+    /**
+     * press stop and draw line on google map
+     */
     private void drawlines(ArrayList<Location> locations) {
         PolylineOptions options = new PolylineOptions()
                 .color(Color.RED)
@@ -345,7 +364,9 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    //track location in google map based on GPS sensor.
+    /**
+     * track location in google map based on GPS sensor.
+     */
     private class NewLocationListener implements LocationListener {
 
         @Override
@@ -372,6 +393,10 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
 
         }
     }
+
+    /**
+     * initialize the currently location on google map
+     */
     private void iniLocation(){
         if (ActivityCompat.checkSelfPermission(GoogleTrack.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(GoogleTrack.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -385,6 +410,9 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
         }
         mMap.setMyLocationEnabled(true);
     }
+    /**
+     * initialize the google map
+     */
     private void initMap() {
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(unimelb.lungcare.R.id.map);
         mapFragment.getMapAsync(this);
@@ -395,7 +423,10 @@ public class GoogleTrack extends AppCompatActivity implements OnMapReadyCallback
 
 
     }
-    //update the googlemap
+
+    /**
+     *  zooming the current location and update
+     */
     private void goTonLocationZoom(double lat, double lng, int zoom) {
         LatLng ll = new LatLng(lat, lng);
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(ll, zoom);

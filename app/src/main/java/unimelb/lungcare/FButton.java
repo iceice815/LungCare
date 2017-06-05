@@ -17,6 +17,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ToggleButton;
 
+/**
+ * This class download from http://www.androidchina.net/1992.html
+ * modified by Bing Xie
+ * used to optimize Button to improve user experience
+ */
 
 
 public class FButton extends android.support.v7.widget.AppCompatButton implements View.OnTouchListener {
