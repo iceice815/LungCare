@@ -1,2 +1,3 @@
 # LungCare
-An android application for patient with lung disease.
+Patients with lung disease require regular daily and weekly outdoor exercise. Walk can be regarded as the best option for such patients. Since patients may have different lung disease levels and severities, doctors with abundant diagonal experience could give such patients targeted daily and weekly walking distance and speed guidance based on their own personal circumstances. With well-arranged daily and weekly goals, lung disease patients could obtain improved recovery. The development of a targeted mobile application could help to tackle this. This would benefit both the patients and the doctors alike. 
+
